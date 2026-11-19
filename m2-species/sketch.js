@@ -2516,7 +2516,7 @@ function update3DSimulation(dt, now) {
     _gaze.lerpVectors(camera.position, mouseWorldTarget, 0.3);
     updateCreatureVisual(dt, time, creatureState.stage, creatureState.pulse, creatureState.stareTimer > 0);
 
-    // ---- 軟糖孢子：在海裡漂，靠近時泡膜才會伸出觸手去抓 ----
+    // ---- 軟糖孢子：在海裡漂，靠近時泡靈才會吐泡泡環去抓 ----
     for (let i = spores.length - 1; i >= 0; i--) {
         const sp = spores[i];
         if (sp.eaten) {
@@ -2526,7 +2526,7 @@ function update3DSimulation(dt, now) {
             playEldritchSFX('eat');
             continue;
         }
-        if (sp.grabbed) continue;        // 被觸手抓住時，位置由觸手控制
+        if (sp.grabbed) continue;        // 被泡泡環包住時，位置由泡泡環控制
         sp.phase += dt * 1.4;
         sp.mesh.position.add(sp.vel);
         sp.mesh.position.y += Math.sin(sp.phase) * 0.006;
@@ -2721,7 +2721,7 @@ feedBtn.on('click', () => {
     playEldritchSFX('eat');
     spawnSpores3D(14, true);
     updateNarrativeBanner('', '【投放孢子】把泡泡吹大',
-        '軟糖撒在附近的海裡，游過去靠近時，泡膜會長出小觸手把軟糖抓進泡泡，泡靈再張嘴吃掉。每消化一顆，泡泡就被吹大一圈。');
+        '軟糖撒在附近的海裡，游過去靠近時，泡靈會吐出泡泡環把軟糖包成小泡泡拉回來，再張嘴吃掉。每消化一顆，泡泡就被吹大一圈。');
 });
 const rewindBtn = fAct.addButton({ title: '主動轉分化 Rewind', label: '環境高壓' });
 rewindBtn.element.classList.add('flav-grape');
