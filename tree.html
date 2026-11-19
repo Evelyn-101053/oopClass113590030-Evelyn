@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraTree · 寫實百年古木夏蔭 (Realistic Ancient Tree)</title>
+  <meta name="description" content="對標真實攝影照片之百年老樹：低幹非對稱雙叉巨枝、樹幹攀爬常春藤、陽光盛夏透光綠葉、草坪與地面樹影投影。">
+  <!-- Google Fonts: Outfit & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- p5.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 畫布容器 -->
+  <div id="canvas-container"></div>
+
+  <!-- 頂部資訊列 -->
+  <header class="app-header">
+    <div class="logo-badge">
+      <span class="logo-icon">🌳</span>
+      <div class="logo-text">
+        <h1>AuraTree · 百年古木夏蔭</h1>
+        <span class="subtext">Photographic Realism · Faithful to Reference</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btn-toggle-ui" class="glass-btn icon-btn" title="收合/展開控制面板">
+        <i data-lucide="sliders"></i>
+      </button>
+      <button id="btn-fullscreen" class="glass-btn icon-btn" title="全螢幕切換">
+        <i data-lucide="maximize"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 底部形態切換 Dock -->
+  <nav class="theme-dock" aria-label="形態模式">
+    <button class="theme-pill active" data-mode="classic">
+      <span class="theme-emoji">🌳</span>
+      <span class="theme-name">照片同款老樹</span>
+    </button>
+    <button class="theme-pill" data-mode="lush">
+      <span class="theme-emoji">🌿</span>
+      <span class="theme-name">繁茂盛夏綠蔭</span>
+    </button>
+    <button class="theme-pill" data-mode="gnarly">
+      <span class="theme-emoji">🌾</span>
+      <span class="theme-name">蒼勁虯曲古木</span>
+    </button>
+  </nav>
+
+  <!-- 右側控制面板 -->
+  <aside id="control-panel" class="control-panel glass-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <i data-lucide="settings-2"></i>
+        <span>照片寫實特徵調控</span>
+      </div>
+      <button id="btn-close-panel" class="close-btn" title="收起面板">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="panel-body">
+      <!-- 快捷操作區 -->
+      <div class="action-grid">
+        <button id="btn-regrow" class="action-btn primary-action">
+          <i data-lucide="sprout"></i>
+          <span>重新抽枝展葉</span>
+        </button>
+        <button id="btn-randomize" class="action-btn secondary-action">
+          <i data-lucide="dices"></i>
+          <span>隨機老樹姿態</span>
+        </button>
+      </div>
+
+      <!-- 照片植物特徵對照卡片 -->
+      <div class="botanical-feature-box">
+        <div class="feature-tag">📸 照片真實細節還原</div>
+        <ul>
+          <li><strong>非對稱雙叉</strong>：左臂橫展蜿蜒、右臂斜伸</li>
+          <li><strong>樹幹常春藤</strong>：主幹攀附茂盛翠綠藤蔓</li>
+          <li><strong>盛夏黃綠透光</strong>：嫩黃綠陽光透光葉與深影</li>
+          <li><strong>陽光草坪樹影</strong>：草地上真實深色樹蔭投影</li>
+        </ul>
+      </div>
+
+      <!-- 控制滑桿分組 -->
+      <div class="control-group">
+        <div class="group-title">老樹形態 (Tree Morphology)</div>
+        
+        <div class="slider-item">
+          <div class="slider-label">
+            <span>樹木高度 / 尺寸</span>
+            <span id="val-treeHeight" class="badge">1.0x</span>
+          </div>
+          <input type="range" id="param-treeHeight" min="0.8" max="1.25" step="0.05" value="1.0">
+        </div>
+
+        <div class="slider-item">
+          <div class="slider-label">
+            <span>枝幹蒼勁虯曲度</span>
+            <span id="val-curvature" class="badge">1.0</span>
+          </div>
+          <input type="range" id="param-curvature" min="0.4" max="1.6" step="0.05" value="1.0">
+        </div>
+
+        <div class="slider-item">
+          <div class="slider-label">
+            <span>樹葉簇茂密度</span>
+            <span id="val-foliageDensity" class="badge">100%</span>
+          </div>
+          <input type="range" id="param-foliageDensity" min="40" max="160" step="5" value="100">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="group-title">夏日微風 (Summer Breeze)</div>
+
+        <div class="slider-item">
+          <div class="slider-label">
+            <span>微風吹拂 (Breeze)</span>
+            <span id="val-windSpeed" class="badge">微風 (0.8)</span>
+          </div>
+          <input type="range" id="param-windSpeed" min="0" max="2.0" step="0.1" value="0.8">
+        </div>
+
+        <div class="slider-item">
+          <div class="slider-label">
+            <span>枝葉彈性晃動</span>
+            <span id="val-elasticity" class="badge">0.45</span>
+          </div>
+          <input type="range" id="param-elasticity" min="0.1" max="1.0" step="0.05" value="0.45">
+        </div>
+      </div>
+
+      <!-- 底部功能 -->
+      <div class="panel-footer">
+        <button id="btn-export-png" class="export-btn">
+          <i data-lucide="download"></i>
+          <span>儲存照片級作品 (PNG)</span>
+        </button>
+        <p class="hint-text">💡 移動滑鼠輕觸樹冠可觸發夏風枝葉輕搖</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 狀態指示晶片 -->
+  <div class="status-chip" id="status-chip">
+    <span class="status-dot"></span>
+    <span id="status-text">真實照片還原 · 粗幹橫展雙叉 · 樹幹常春藤 · 陽光草坪樹影</span>
+  </div>
+
+  <script src="tree.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
